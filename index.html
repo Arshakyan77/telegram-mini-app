@@ -1,59 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Telegram Mini App</title>
-
-  <!-- Telegram Mini App SDK -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: var(--tg-theme-bg-color);
-      color: var(--tg-theme-text-color);
-      padding: 20px;
-    }
-
-    .card {
-      background: var(--tg-theme-secondary-bg-color);
-      padding: 16px;
-      border-radius: 12px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sea Battle Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #board { display: grid; grid-template-columns: repeat(10, 40px); }
+        .cell { width: 40px; height: 40px; border: 1px solid #000; text-align: center; line-height: 40px; }
+        .hit { background-color: red; }
+        .miss { background-color: lightblue; }
+        .ship { background-color: gray; }
+    </style>
 </head>
 <body>
+    <h1>Sea Battle Game</h1>
+    <div id="board"></div>
+    <script>
+        const boardSize = 10;
+        const board = Array(boardSize).fill().map(() => Array(boardSize).fill(0));
+        const ships = [[0, 0], [0, 1], [0, 2], [1, 1], [1, 2], [2, 2]]; // Example ship coordinates
+        let hits = 0;
 
-  <div class="card">
-    <h2 id="hello">Loading…</h2>
-    <p id="userid"></p>
-  </div>
+        function createBoard() {
+            const boardDiv = document.getElementById('board');
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.x = i;
+                    cell.dataset.y = j;
+                    cell.addEventListener('click', handleCellClick);
+                    boardDiv.appendChild(cell);
+                }
+            }
+        }
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.ready();
+        function handleCellClick(event) {
+            const x = event.target.dataset.x;
+            const y = event.target.dataset.y;
 
-    const user = tg.initDataUnsafe.user;
+            if (board[x][y] === 0) {
+                if (ships.some(ship => ship[0] === x && ship[1] === y)) {
+                    event.target.classList.add('hit');
+                    board[x][y] = 1;
+                    hits++;
+                    if (hits === ships.length) {
+                        alert('You sunk all ships!');
+                    }
+                } else {
+                    event.target.classList.add('miss');
+                    board[x][y] = -1;
+                }
+            }
+        }
 
-    if (user) {
-      document.getElementById("hello").innerText =
-        "Hello, " + user.first_name + " 👋";
-
-      document.getElementById("userid").innerText =
-        "Your Telegram ID: " + user.id;
-    } else {
-      document.getElementById("hello").innerText =
-        "Open this app inside Telegram";
-    }
-
-    // Telegram native button
-    tg.MainButton.setText("Continue");
-    tg.MainButton.show();
-
-    tg.MainButton.onClick(() => {
-      alert("Mini App works 🚀");
-    });
-  </script>
-
+        createBoard();
+    </script>
 </body>
 </html>
