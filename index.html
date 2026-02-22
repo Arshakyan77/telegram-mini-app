@@ -1,31 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pink Love Message Game</title>
+    <style>
+        body {
+            background: linear-gradient(to right, pink, lightpink);
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <h1 id="message">Hayk loves you</h1>
+        <button id="nextStep">I'm happy</button>
+    </div>
+
     <script>
-        function sendNotification() {
-            const botToken = '8560420576:AAEeAVOyZb0SmaYl9bUf7bQ3_fHbeZXB7dg';
-            const userId = '998224615';
-            const message = 'You have received a pink love message!';
+        let step = 0;
+
+        document.getElementById('nextStep').onclick = function() {
+            step++;
+            if (step === 1) {
+                document.getElementById('message').innerText = "Do you love Hayk?";
+            } else if (step === 2) {
+                document.getElementById('message').innerText = "This is love";
+                document.getElementById('nextStep').innerText = "Finish";
+            } else {
+                notifyTelegram();
+            }
+        };
+
+        function notifyTelegram() {
+            const userName = "User's Name"; // Replace with actual logic to get user's name
+            const telegramId = 998224615; // Replace with logic to get the user's Telegram ID
+            const botToken = "8560420576:AAEeAVOyZb0SmaYl9bUf7bQ3_fHbeZXB7dg";
 
             fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    chat_id: userId,
-                    text: message
+                    chat_id: telegramId,
+                    text: `${userName} completed the love message game!`
                 })
-            })
-            .then(response => response.json())
-            .then(data => console.log('Notification sent:', data))
-            .catch(error => console.error('Error sending notification:', error));
+            });
+            alert("Notification sent to Telegram!");
         }
     </script>
-</head>
-<body>
-<h1>Welcome to the Pink Love Message Game!</h1>
-<button onclick="sendNotification()">Send Love Message</button>
 </body>
 </html>
