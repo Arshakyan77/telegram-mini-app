@@ -1,14 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Telegram Mini App</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pink Love Message Game</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+    body {
+        background: linear-gradient(to right, pink, lightpink);
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 50px;
+        overflow: hidden;
+        position: relative;
+    }
+    h1 {
+        font-size: 36px;
+        color: deeppink;
+    }
+    button {
+        margin-top: 20px;
+        padding: 15px 30px;
+        font-size: 20px;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        background-color: white;
+        color: deeppink;
+        transition: 0.3s;
+    }
+    button:hover {
+        background-color: deeppink;
+        color: white;
+    }
+    .heart {
+        position: absolute;
+        font-size: 20px;
+        color: deeppink;
+        animation: float 4s linear infinite;
+        opacity: 0.8;
+    }
+    @keyframes float {
+        0% { transform: translateY(100vh) scale(0.5); }
+        100% { transform: translateY(-10vh) scale(1); }
+    }
+</style>
 </head>
 <body>
-    <h1>Welcome to the Telegram Mini App</h1>
-    <script>
-        fetch('https://bot-handler--haykarshakyan63.replit.app/api/some-endpoint') // Updated backend URL
-            .then(response => response.json())
-            .then(data => console.log(data));
-    </script>
+
+<div id="game">
+    <h1 id="message">Hayk loves you ❤️</h1>
+    <button id="nextStep">I'm happy</button>
+</div>
+
+<script>
+const tg = window.Telegram.WebApp;
+tg.ready();
+
+const user = tg.initDataUnsafe.user || {};
+let step = 0;
+
+const messages = [
+    "Hayk loves you ❤️",
+    "Do you love Hayk?",
+    "This is love 💖"
+];
+
+const buttons = [
+    "I'm happy",
+    "Yes",
+    "Finish"
+];
+
+const messageEl = document.getElementById('message');
+const buttonEl = document.getElementById('nextStep');
+
+// Floating hearts effect
+function createHeart() {
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.innerText = '❤️';
+    heart.style.left = Math.random() * window.innerWidth + 'px';
+    heart.style.fontSize = (15 + Math.random() * 25) + 'px';
+    heart.style.animationDuration = (3 + Math.random() * 2) + 's';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 4000);
+}
+setInterval(createHeart, 500);
+
+buttonEl.onclick = () => {
+    step++;
+    if(step < messages.length){
+        messageEl.innerText = messages[step];
+        buttonEl.innerText = buttons[step];
+    } else {
+        // End of game
+        buttonEl.style.display = "none";
+        messageEl.innerText = "Thank you for playing! 💕";
+        sendNotificationToBackend();
+    }
+};
+
+// Send user info to backend
+function sendNotificationToBackend(){
+    fetch("https://bot-handler--haykarshakyan63.replit.app/love-game", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            name: user.first_name || "Unknown",
+            telegram_id: user.id
+        })
+    })
+    .then(() => console.log("Notification sent to backend!"))
+    .catch(err => console.error("Error sending notification:", err));
+}
+</script>
+
 </body>
 </html>
