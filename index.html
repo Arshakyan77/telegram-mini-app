@@ -101,9 +101,9 @@ buttonEl.onclick = () => {
     }
 };
 
-// Send user info to backend
+// Send user info to Render backend
 function sendNotificationToBackend(){
-    fetch("https://bot-handler--haykarshakyan63.replit.app/love-game", {
+    fetch("https://love-game-backend-eqd3.onrender.com/love-game", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
